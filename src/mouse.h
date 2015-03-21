@@ -70,4 +70,7 @@ void toggleMouse(bool down, MMMouseButton button);
 /* Clicks the mouse with the given button in the current position. */
 void clickMouse(MMMouseButton button);
 
+/* Double-clicks the mouse with the given button in the current position. */
+void dblclickMouse(MMMouseButton button);
+
 #endif /* MOUSE_H */

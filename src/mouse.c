@@ -124,6 +124,30 @@ void clickMouse(MMMouseButton button)
 	toggleMouse(false, button);
 }
 
+void dblclickMouse(MMMouseButton button)
+{
+	clickMouse(button);
+
+	// 2nd click
+#if defined(IS_MACOSX)
+	const CGPoint currentPos = CGPointFromMMPoint(getMousePos());
+	const CGEventType mouseType = MMMouseToCGEventType(true, button);
+	CGEventRef event = CGEventCreateMouseEvent(NULL,
+	                                           mouseType,
+	                                           currentPos,
+	                                           (CGMouseButton)button);
+
+	CGEventSetIntegerValueField(event, kCGMouseEventClickState, 2);
+	CGEventPost(kCGSessionEventTap, event);
+
+	CGEventSetType(event, MMMouseToCGEventType(false, button));
+	CGEventPost(kCGSessionEventTap, event);
+	CFRelease(event);
+#else
+	clickMouse(button);
+#endif
+}
+
 /*
  * A crude, fast hypot() approximation to get around the fact that hypot() is
  * not a standard ANSI C function.

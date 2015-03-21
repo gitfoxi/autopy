@@ -39,6 +39,11 @@ static PyObject *mouse_toggle(PyObject *self, PyObject *args);
                 releases the given mouse button. */
 static PyObject *mouse_click(PyObject *self, PyObject *args);
 
+/* Syntax: dblclick(button=LEFT_BUTTON) */
+/* Arguments: |button| => int */
+/* Description: Explicit double-click for Mac OS X which click two times is not working. */
+static PyObject *mouse_dblclick(PyObject *self, PyObject *args);
+
 static PyMethodDef MouseMethods[] = {
 	{"move", mouse_move, METH_VARARGS,
 	 "move(x, y) -> None\n"
@@ -55,6 +60,9 @@ static PyMethodDef MouseMethods[] = {
 	{"click", mouse_click, METH_VARARGS,
 	 "click(button=LEFT_BUTTON) -> None\n"
 	 "Clicks the mouse with the given button."},
+	{"dblclick", mouse_dblclick, METH_VARARGS,
+	 "dblclick(button=LEFT_BUTTON) -> None\n"
+	 "Double-clicks the mouse with the given button."},
 	{NULL, NULL, 0, NULL} /* Sentinel */
 };
 
@@ -162,6 +170,22 @@ static PyObject *mouse_click(PyObject *self, PyObject *args)
 	}
 
 	clickMouse(button);
+
+	Py_RETURN_NONE;
+}
+
+static PyObject *mouse_dblclick(PyObject *self, PyObject *args)
+{
+	MMMouseButton button = LEFT_BUTTON;
+
+	if (!PyArg_ParseTuple(args, "|I", &button)) return NULL;
+
+	if (!MMMouseButtonIsValid(button)) {
+		PyErr_SetString(PyExc_ValueError, "Invalid mouse button");
+		return NULL;
+	}
+
+	dblclickMouse(button);
 
 	Py_RETURN_NONE;
 }
