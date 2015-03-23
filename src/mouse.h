@@ -73,4 +73,7 @@ void clickMouse(MMMouseButton button);
 /* Double-clicks the mouse with the given button in the current position. */
 void dblclickMouse(MMMouseButton button);
 
+/* Tripple-clicks the mouse with the given button in the current position. */
+void tplclickMouse(MMMouseButton button);
+
 #endif /* MOUSE_H */

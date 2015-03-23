@@ -44,6 +44,11 @@ static PyObject *mouse_click(PyObject *self, PyObject *args);
 /* Description: Explicit double-click for Mac OS X which click two times is not working. */
 static PyObject *mouse_dblclick(PyObject *self, PyObject *args);
 
+/* Syntax: tplclick(button=LEFT_BUTTON) */
+/* Arguments: |button| => int */
+/* Description: Explicit double-click for Mac OS X which click two times is not working. */
+static PyObject *mouse_tplclick(PyObject *self, PyObject *args);
+
 static PyMethodDef MouseMethods[] = {
 	{"move", mouse_move, METH_VARARGS,
 	 "move(x, y) -> None\n"
@@ -63,6 +68,9 @@ static PyMethodDef MouseMethods[] = {
 	{"dblclick", mouse_dblclick, METH_VARARGS,
 	 "dblclick(button=LEFT_BUTTON) -> None\n"
 	 "Double-clicks the mouse with the given button."},
+	{"tplclick", mouse_tplclick, METH_VARARGS,
+	 "tplclick(button=LEFT_BUTTON) -> None\n"
+	 "Tripple-clicks the mouse with the given button."},
 	{NULL, NULL, 0, NULL} /* Sentinel */
 };
 
@@ -186,6 +194,22 @@ static PyObject *mouse_dblclick(PyObject *self, PyObject *args)
 	}
 
 	dblclickMouse(button);
+
+	Py_RETURN_NONE;
+}
+
+static PyObject *mouse_tplclick(PyObject *self, PyObject *args)
+{
+	MMMouseButton button = LEFT_BUTTON;
+
+	if (!PyArg_ParseTuple(args, "|I", &button)) return NULL;
+
+	if (!MMMouseButtonIsValid(button)) {
+		PyErr_SetString(PyExc_ValueError, "Invalid mouse button");
+		return NULL;
+	}
+
+	tplclickMouse(button);
 
 	Py_RETURN_NONE;
 }

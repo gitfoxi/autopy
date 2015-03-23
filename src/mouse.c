@@ -148,6 +148,54 @@ void dblclickMouse(MMMouseButton button)
 #endif
 }
 
+void tplclickMouse(MMMouseButton button)
+{
+	clickMouse(button);
+
+	// 2nd click
+#if defined(IS_MACOSX)
+	const CGPoint currentPos = CGPointFromMMPoint(getMousePos());
+	const CGEventType mouseType = MMMouseToCGEventType(true, button);
+	CGEventRef event = CGEventCreateMouseEvent(NULL,
+	                                           mouseType,
+	                                           currentPos,
+	                                           (CGMouseButton)button);
+
+	// It seems like we have to do all this in order to get some applications to
+	// recognize the triple click from outside.For example if MacVim is not
+	// focused and you triple click into its window it will see it as a double
+	// click otherwise.
+
+	CGEventSetIntegerValueField(event, kCGMouseEventClickState, 1);
+	CGEventPost(kCGSessionEventTap, event);
+
+	CGEventSetType(event, MMMouseToCGEventType(true, button));
+	CGEventPost(kCGSessionEventTap, event);
+	CGEventSetType(event, MMMouseToCGEventType(false, button));
+	CGEventPost(kCGSessionEventTap, event);
+	
+	CGEventSetIntegerValueField(event, kCGMouseEventClickState, 2);
+	CGEventPost(kCGSessionEventTap, event);
+
+	CGEventSetType(event, MMMouseToCGEventType(true, button));
+	CGEventPost(kCGSessionEventTap, event);
+	CGEventSetType(event, MMMouseToCGEventType(false, button));
+	CGEventPost(kCGSessionEventTap, event);
+	
+	CGEventSetIntegerValueField(event, kCGMouseEventClickState, 3);
+	CGEventSetType(event, MMMouseToCGEventType(true, button));
+	CGEventPost(kCGSessionEventTap, event);
+	CGEventSetType(event, MMMouseToCGEventType(false, button));
+	CGEventPost(kCGSessionEventTap, event);
+
+	CFRelease(event);
+
+#else
+	clickMouse(button);
+	clickMouse(button);
+#endif
+}
+
 /*
  * A crude, fast hypot() approximation to get around the fact that hypot() is
  * not a standard ANSI C function.
